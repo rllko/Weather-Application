@@ -15,7 +15,18 @@ namespace Weather
     internal class WeatherDataSource : ISubject
     {
         readonly List<IObserver> observers;
+        WeatherData? WeatherData { get; set; }
         private string data;
+
+        public double GetCurrentTemperature()
+        {
+            if(WeatherData == null)
+            {
+                throw new ArgumentException(message: "Trying to get data when the object is null");
+            }
+
+            return WeatherData.List [0].Metrics.Temp;
+        }
 
         public WeatherDataSource()
         {
@@ -53,10 +64,9 @@ namespace Weather
                 // Get location forecast
                 string weatherUrl = $"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&units=metric&appid={ApiKey}&cnt=17";
                 data = await client.GetStringAsync(weatherUrl);
+                WeatherData = JsonSerializer.Deserialize<WeatherData>(data);
             }
             MeasurementsChanged();
         }
-
-
     }
 }
