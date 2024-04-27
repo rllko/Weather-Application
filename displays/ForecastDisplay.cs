@@ -9,13 +9,15 @@ namespace Weather.displays
 {
     internal class ForecastDisplay : IDisplayElement, IObserver
     {
-        private WeatherData? weather;
+        private WeatherData? WeatherData;
+        private readonly WeatherDataSource WeatherDataSource;
         //private readonly ISubject subject;
         private Table? Table { get; set; }
 
         // added the subject as a constructor in case i want to update the location later
-        public ForecastDisplay(ISubject subject)
+        public ForecastDisplay(WeatherDataSource subject)
         {
+            this.WeatherDataSource = subject;
             subject.RegisterObserver(this);
         }
 
@@ -25,7 +27,7 @@ namespace Weather.displays
             Table = new Table().Centered();
 
             // Filter the object list and group by hour, the midnight value seems to bug sometimes
-            var days = weather.List.Where(item => item.EntryDateObject.Hour > 0).GroupBy(item => (item.EntryDateObject - DateTime.Today).Days);
+            var days = WeatherData.List.Where(item => item.EntryDateObject.Hour > 0).GroupBy(item => (item.EntryDateObject - DateTime.Today).Days);
             days.ToList().ForEach(filteredDay =>
             {
                 filteredDay.ToList().ForEach(data =>
@@ -56,10 +58,11 @@ namespace Weather.displays
             });
         }
 
-        public void Update(string jsonData)
+        public void Update()
         {
             // Deserialize forecast object
-            weather = JsonSerializer.Deserialize<WeatherData>(jsonData) ?? throw new ArgumentException(message: "weather cant be null"); ;
+            string json = WeatherDataSource.JsonData;
+            WeatherData = JsonSerializer.Deserialize<WeatherData>(json) ?? throw new ArgumentException(message: "weather cant be null"); ;
             Display();
         }
 

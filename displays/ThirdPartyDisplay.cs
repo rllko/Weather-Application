@@ -18,7 +18,7 @@ namespace Weather.displays
             throw new NotImplementedException();
         }
 
-        public void Update(string weatherDataJson)
+        public void Update()
         {
             throw new NotImplementedException();
         }

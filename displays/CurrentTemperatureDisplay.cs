@@ -21,7 +21,7 @@ namespace Weather.displays
             Console.WriteLine($"Current Weather: {currentWeather}");
         }
 
-        public void Update(string weatherDataJson)
+        public void Update()
         {
             currentWeather = WeatherDataSource.GetCurrentTemperature();
         }

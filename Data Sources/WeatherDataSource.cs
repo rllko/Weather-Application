@@ -15,8 +15,11 @@ namespace Weather
     internal class WeatherDataSource : ISubject
     {
         readonly List<IObserver> observers;
-        WeatherData? WeatherData { get; set; }
-        private string data;
+        private WeatherData? WeatherData { get; set; }
+        private string Data { get; set; }
+        public string JsonData => Data;
+
+        public WeatherData? weatherData => WeatherData;
 
         public double GetCurrentTemperature()
         {
@@ -30,7 +33,7 @@ namespace Weather
 
         public WeatherDataSource()
         {
-            data = "";
+            Data = "";
             observers = [];
         }
 
@@ -38,7 +41,7 @@ namespace Weather
         {
             foreach (IObserver observer in observers)
             {
-                observer.Update(data);
+                observer.Update();
             }
         }
 
@@ -63,8 +66,8 @@ namespace Weather
             {
                 // Get location forecast
                 string weatherUrl = $"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&units=metric&appid={ApiKey}&cnt=17";
-                data = await client.GetStringAsync(weatherUrl);
-                WeatherData = JsonSerializer.Deserialize<WeatherData>(data);
+                Data = await client.GetStringAsync(weatherUrl);
+                WeatherData = JsonSerializer.Deserialize<WeatherData>(Data);
             }
             MeasurementsChanged();
         }

@@ -9,6 +9,6 @@ namespace Weather.interfaces
 {
     internal interface IObserver
     {
-        void Update(string weatherDataJson);
+        void Update();
     }
 }
