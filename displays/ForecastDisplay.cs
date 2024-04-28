@@ -33,7 +33,7 @@ namespace Weather.displays
                 filteredDay.ToList().ForEach(data =>
                 {
                     Table.Title(data.EntryDateObject.DayOfWeek.ToString());
-                    Table.AddColumn($"{data.EntryDateObject.TimeOfDay}");
+                    Table.AddColumn($"{data.EntryDateObject.TimeOfDay}").Width(10);
                 });
 
                 List<string> temperatures = [];
