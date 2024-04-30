@@ -29,7 +29,7 @@ internal class Program
         JsonSerializer.Deserialize<LocationData[]>(response) ?? throw new ArgumentException(message: "Locations object cannot be null");
 
         // Convert obtained locations to string
-        var choices = (from loc in availableLocations select location.ToString()).ToArray();
+        var choices = (from loc in availableLocations select loc.ToString()).ToArray();
         
         // Check for valid length
         if(choices.Length == 0 )
