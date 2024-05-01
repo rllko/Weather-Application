@@ -30,20 +30,20 @@ namespace Weather.displays
             var days = WeatherData.List.Where(item => item.EntryDateObject.Hour > 0).GroupBy(item => (item.EntryDateObject - DateTime.Today).Days);
             days.ToList().ForEach(filteredDay =>
             {
-                filteredDay.ToList().ForEach(data =>
+                filteredDay.Take(5).ToList().ForEach(data =>
                 {
                     Table.Title(data.EntryDateObject.DayOfWeek.ToString());
-                    Table.AddColumn($"{data.EntryDateObject.TimeOfDay}").Width(10);
+                    Table.AddColumn($"{data.EntryDateObject.TimeOfDay}").Width(80);
                 });
 
                 List<string> temperatures = [];
-                filteredDay.ToList().ForEach(data =>
+                filteredDay.Take(5).ToList().ForEach(data =>
                 {
                     var textDescription = data.TextDescriptions[0];
                     string emoji = GetEmoji(data.TextDescriptions[0].Forecast);
 
                     string output = $"""
-                    {textDescription.Forecast}{emoji}
+                    {textDescription.Forecast} {emoji}{Environment.NewLine}
                     {textDescription.ForecastDetails}
                     {data.Metrics.Temp}C
                     """;

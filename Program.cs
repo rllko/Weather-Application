@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using System.Text.RegularExpressions;
 using Spectre.Console;
 using Weather;
 using Weather.displays;
@@ -12,16 +11,16 @@ internal class Program
         // Set the output encoding of the console to enable emojis
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-        AnsiConsole.Markup("Rikko/Ricardo, 2024\n[link]https://openweathermap.org[/] for the weather data\n");
+        AnsiConsole.Markup($"Rikko/Ricardo, 2024{Environment.NewLine}[link]https://openweathermap.org[/] for the weather data{Environment.NewLine}");
         var location = AnsiConsole.Ask<string>("What's your [green]city name, state code or country code[/]?\n");
 
         // Dont forget to remove the api key later.
-        const string ApiKey = "PUT YOUR API KEY HERE";
+        const string ApiKey = "d8cab8843ca755bf51bd2573b5faae22";
 
         var client = new HttpClient();
         
         // Fetch found locations from the API
-        string url = $"http://api.openweathermap.org/geo/1.0/direct?q={location}&appid={ApiKey}";
+        string url = $"http://api.openweathermap.org/geo/1.0/direct?q={location}&cnt=5&appid={ApiKey}";
         string response = await client.GetStringAsync(url);
 
         // Serialize obtained locations
