@@ -11,48 +11,26 @@ internal class Program
         // Set the output encoding of the console to enable emojis
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-        AnsiConsole.Markup($"Rikko/Ricardo, 2024{Environment.NewLine}[link]https://openweathermap.org[/] for the weather data{Environment.NewLine}");
-        var location = AnsiConsole.Ask<string>("What's your [green]city name, state code or country code[/]?\n");
-
         // Dont forget to remove the api key later.
-        const string ApiKey = "";
+        const string ApiKey = "API KEY";
 
-        var client = new HttpClient();
-        
-        // Fetch found locations from the API
-        string url = $"http://api.openweathermap.org/geo/1.0/direct?q={location}&cnt=5&appid={ApiKey}";
-        string response = await client.GetStringAsync(url);
+        // Create Start display to get input from the user
+        StartDisplay startDisplay = new StartDisplay();
+        startDisplay.Display();
 
-        // Serialize obtained locations
-        LocationData[]? availableLocations =
-        JsonSerializer.Deserialize<LocationData[]>(response) ?? throw new ArgumentException(message: "Locations object cannot be null");
+        // Get data from the user
+        LocationData selectedItem = await startDisplay.requestData(ApiKey);
 
-        // Convert obtained locations to string
-        var choices = (from loc in availableLocations select loc.ToString()).ToArray();
-        
-        // Check for valid length
-        if(choices.Length == 0 )
-        {
-            Console.WriteLine("An Error occured, no such city exists!");
-            Environment.Exit(1);
-        }
-
-        var selectionPrompt =  new SelectionPrompt<string>()
-            .Title("Select the correct option:")
-            .PageSize(5)
-            .AddChoices(choices);
-
-        // Ask the user to pick the correct one
-        var obtainedLocations = AnsiConsole.Prompt(selectionPrompt);
-
-        // Get selected location object
-        LocationData selectedItem = Array.Find(availableLocations,location => location.ToString() == obtainedLocations) 
-            ?? throw new ArgumentException(message: "LocationData cannot be null"); ;
-
+        // Create Source to get data from the API
         WeatherDataSource weatherDataSource = new();
+
+        // Create a Display to show the data
         ForecastDisplay forecastDisplay = new(weatherDataSource);
 
+        // Fetch the data from the API and send to Observers 
         await weatherDataSource.FetchAndUpdateMeasurements(selectedItem.Lat, selectedItem.Lon, ApiKey);
+
+        // Display data
         forecastDisplay.Display();
     }
 }

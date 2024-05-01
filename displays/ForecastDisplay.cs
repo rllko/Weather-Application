@@ -9,7 +9,7 @@ namespace Weather.displays
 {
     internal class ForecastDisplay : IDisplayElement, IObserver
     {
-        private WeatherData? WeatherData;
+        private WeatherData WeatherData;
         private readonly WeatherDataSource WeatherDataSource;
         //private readonly ISubject subject;
         private Table? Table { get; set; }
@@ -23,39 +23,44 @@ namespace Weather.displays
 
         public void Display()
         {
+            List<Table> tables = [];
             // Create a table
             Table = new Table().Centered();
 
             // Filter the object list and group by hour, the midnight value seems to bug sometimes
-            var days = WeatherData.List.Where(item => item.EntryDateObject.Hour > 0).GroupBy(item => (item.EntryDateObject - DateTime.Today).Days);
-            days.ToList().ForEach(filteredDay =>
+            var entries = (from day in WeatherData.List
+                           select day)
+                           .GroupBy(day => day.EntryDateObject.Day)
+                           .Distinct()
+                           .ToList();
+
+            entries.Distinct().ToList().ForEach(filteredDay =>
             {
-                filteredDay.Take(5).ToList().ForEach(data =>
+                List<string> temperatures = [];
+                filteredDay.ToList().ForEach(data =>
                 {
                     Table.Title(data.EntryDateObject.DayOfWeek.ToString());
-                    Table.AddColumn($"{data.EntryDateObject.TimeOfDay}").Width(80);
-                });
+                    Table.AddColumn($"[bold]{data.EntryDateObject.TimeOfDay}[/]").Width(100);
 
-                List<string> temperatures = [];
-                filteredDay.Take(5).ToList().ForEach(data =>
-                {
                     var textDescription = data.TextDescriptions[0];
                     string emoji = GetEmoji(data.TextDescriptions[0].Forecast);
 
-                    string output = $"""
+                temperatures.Add($"""
                     {textDescription.Forecast} {emoji}{Environment.NewLine}
                     {textDescription.ForecastDetails}
                     {data.Metrics.Temp}C
-                    """;
-
-                    temperatures.Add(output);
+                    """);
                 });
                 Table.AddRow(temperatures.ToArray()).Centered();
 
-                // Render the table to the console
-                AnsiConsole.Write(Table);
+                tables.Add(Table);
                 Table = new Table().Centered();
             });
+            // Render the table to the console
+            tables.ForEach(table => AnsiConsole.Write(table));
+
+            Console.ReadKey();
+            Environment.Exit(0);
         }
 
         public void Update()
@@ -69,7 +74,7 @@ namespace Weather.displays
         public static string GetEmoji(string input) => input switch
         {
             "Clouds" => ":sun_behind_cloud:",
-            "Rain" => ":cloud_with_rain:",
+            "Rain" => ":cloud_with_lightning_and_rain:",
             "Clear" => ":sun:",
             _ => throw new ArgumentException(message: "unrecognized weather"),
         };

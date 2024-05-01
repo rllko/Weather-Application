@@ -65,7 +65,7 @@ namespace Weather
             using(var client = new HttpClient())
             {
                 // Get location forecast
-                string weatherUrl = $"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&units=metric&appid={ApiKey}&cnt=17";
+                string weatherUrl = $"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&units=metric&appid={ApiKey}";
                 Data = await client.GetStringAsync(weatherUrl);
                 WeatherData = JsonSerializer.Deserialize<WeatherData>(Data);
             }

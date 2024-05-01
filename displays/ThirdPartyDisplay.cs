@@ -9,8 +9,10 @@ namespace Weather.displays
 {
     internal class ThirdPartyDisplay : IDisplayElement, IObserver
     {
-        public ThirdPartyDisplay(ISubject subject) {
+        readonly WeatherDataSource DataSource;
+        public ThirdPartyDisplay(WeatherDataSource subject) {
             subject.RegisterObserver(this);
+            DataSource = subject;
         }
 
         public void Display()
