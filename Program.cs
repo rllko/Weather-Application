@@ -15,7 +15,7 @@ internal class Program
         var location = AnsiConsole.Ask<string>("What's your [green]city name, state code or country code[/]?\n");
 
         // Dont forget to remove the api key later.
-        const string ApiKey = "d8cab8843ca755bf51bd2573b5faae22";
+        const string ApiKey = "";
 
         var client = new HttpClient();
         
